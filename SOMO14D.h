@@ -27,13 +27,12 @@ class SOMO14D
 {
 	public:
 		boolean begin(uint8_t clkPin, uint8_t dataPin, uint8_t busyPin);
-		void play(unsigned int song);
-		void stop();
-		void pause();
+		boolean play(unsigned int song);
+		boolean stop();
+		boolean pause();
+		boolean getState();
 		uint8_t getVolume();
 		void setVolume(uint8_t volume);
-		void increaseVolume();
-		void decreaseVolume();
 
 	private:
 		uint8_t _clkPin;

@@ -30,33 +30,50 @@ boolean SOMO14D::begin(uint8_t clkPin, uint8_t dataPin, uint8_t busyPin){
 	pinMode(_busyPin, INPUT);
 
 	_volume = SOMO14D_MAX_VOLUME;
+
+	delay(200);
 }
 
 //
 // play
 //
 // Play an specific song/audio
-void SOMO14D::play(unsigned int song){
+boolean SOMO14D::play(unsigned int song){
 
 	_sendCommand(song);
+	delay(1);
+	return (digitalRead(_busyPin) == HIGH);
 }
 
 //
 // stop
 //
 // Stop present song/audio
-void SOMO14D::stop(){
+boolean SOMO14D::stop(){
 
 	_sendCommand(SOMO14D_STOP);
+	delay(1);
+	return (digitalRead(_busyPin) == HIGH);
 }
 
 //
 // pause
 //
 // Pause or resume present song/audio
-void SOMO14D::pause(){
+boolean SOMO14D::pause(){
 
 	_sendCommand(SOMO14D_PAUSE);
+	delay(1);
+	return (digitalRead(_busyPin) == HIGH);
+}
+
+//
+// getState
+//
+// return if player is running (TRUE) or not (FALSE)
+boolean SOMO14D::getState(){
+
+	return (digitalRead(_busyPin) == HIGH);
 }
 
 //
@@ -74,32 +91,10 @@ uint8_t SOMO14D::getVolume(){
 // set a specific volume for SOMO-14D
 void SOMO14D::setVolume(uint8_t volume){
 
+	if (volume > 7)
+		volume = 7;
 	_volume = volume + SOMO14D_MIN_VOLUME;
 	_sendCommand(_volume);
-}
-
-//
-// increaseVolume
-//
-// Increase volume for SOMO-14D
-void SOMO14D::increaseVolume(){
-
-	if (_volume < SOMO14D_MAX_VOLUME){
-		_volume++;
-		_sendCommand(_volume);
-	}
-}
-
-//
-// decreaseVolume
-//
-// Decrease volume for SOMO-14D
-void SOMO14D::decreaseVolume(){
-
-	if (_volume > SOMO14D_MIN_VOLUME){
-		_volume--;
-		_sendCommand(_volume);
-	}
 }
 
 //
@@ -121,10 +116,10 @@ void SOMO14D::_sendCommand(unsigned int command){
         else
 			digitalWrite(_dataPin, LOW);
 		command = command << 1;
-		delayMicroseconds(100);      //Clock cycle period is 100 uSec - LOW
+		delayMicroseconds(120);      //Clock cycle period is 100 uSec - LOW
 		digitalWrite(_clkPin, HIGH);
 		dataCounter++;
-		delayMicroseconds(100);      //Clock cycle period is 100 uSec - HIGH
+		delayMicroseconds(120);      //Clock cycle period is 100 uSec - HIGH
 	}
 
 	digitalWrite(_dataPin, LOW);
